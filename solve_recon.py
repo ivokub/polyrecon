@@ -74,7 +74,7 @@ def indep_solutions(solved, base):
     dependent[-1] = 0    # answer may be dependent, we dont care
     return dependent, independent
 
-def rat_poly_sing(mat, indep, d1, d2, base):
+def rat_poly_sing(mat, indep, d1, d2, base, coeff=False):
     ## XXX: Only for singular solutions for now
     coefficients = [0] * (d1 + d2)
     try:
@@ -86,6 +86,8 @@ def rat_poly_sing(mat, indep, d1, d2, base):
             coefficients[i] = (mat[i][-1] - mat[i][list(indep).index(1)]) % base
     coeff_n = list(enumerate(coefficients[d1-1::-1]))
     coeff_d = list(enumerate(coefficients[:d1-1:-1]))
+    if coeff:
+        return coeff_n, coeff_d
     f = lambda x: (pow(x, d1, base) + sum([pow(x, a, base) * b for (a,b) in coeff_n])) % base
     g = lambda x: (pow(x, d2, base) + sum([pow(x, a, base) * b for (a,b) in coeff_d])) % base
     return f,g
