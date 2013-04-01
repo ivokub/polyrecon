@@ -92,8 +92,18 @@ def rat_poly_sing(mat, indep, d1, d2, base, coeff=False):
     g = lambda x: (pow(x, d2, base) + sum([pow(x, a, base) * b for (a,b) in coeff_d])) % base
     return f,g
 
+def evaluate(hostset, points, base):
+    values = []
+    char_coef = np.poly(hostset)
+    for point in points:
+        values.append(mpz(np.polyval(char_coef, point) % base))
+    return values
     
-    
+def divide(set1, set2, base):
+    values = []
+    for (v1, v2) in zip(set1, set2):
+        values.append(v1 * v2.invert(base))
+    return values
 
 def test_data():
     evpoints = [-1, -2, -3, -4, -5]
