@@ -6,6 +6,7 @@ Very simple module to solve linear equation systems in finite fields.
 import numpy as np
 from gmpy import mpz, invert
 import pdb  # XXX: Delete when done
+from math import floor
 
 def solve_bottom(mat, base):
     localmat = mat.copy() 
@@ -96,14 +97,36 @@ def evaluate(hostset, points, base):
     values = []
     char_coef = np.poly(hostset)
     for point in points:
-        values.append(mpz(np.polyval(char_coef, point) % base))
+        evaluated = np.polyval(char_coef, point) % base
+        values.append(mpz(int(evaluated)))
     return values
     
 def divide(set1, set2, base):
     values = []
     for (v1, v2) in zip(set1, set2):
-        values.append(v1 * v2.invert(base))
+        values.append(v1 * v2.invert(base) % base)
     return values
+
+def poly_bounds(set1, set2, m):
+    delta = len(set1) - len(set2)
+    d1 = int(floor((m+delta)/2.0))
+    d2 = int(floor((m-delta)/2.0))
+    return d1,d2
+
+def test(fn1, fn2, base):
+    ## _very_ naive. still working on root finding
+    sol1 = []
+    sol2 = []
+    for i in range(base):
+        if fn1(i) == 0:
+            sol1.append(i)
+    for i in range(base):
+        if fn2(i) == 0:
+            if i in sol1:
+                sol1.remove(i)
+            else:
+                sol2.append(i)
+    return sol1, sol2
 
 def test_data():
     evpoints = [-1, -2, -3, -4, -5]
