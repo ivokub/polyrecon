@@ -5,6 +5,7 @@ Very simple module to solve linear equation systems in finite fields.
 """
 import numpy as np
 from gmpy import mpz, invert
+import pdb  # XXX: Delete when done
 
 def solve_bottom(mat, base):
     localmat = mat.copy() 
@@ -61,7 +62,7 @@ def create_equations(evpoints, values, d1, d2, base):
         mat.append(vec)
     return mod_matrix(create_mat(mat), base)
 
-def rat_poly(solved, base):
+def indep_solutions(solved, base):
     fil = lambda x: x != 0
     ## TODO: Consider if solution is not sigular and how to compute all
     ## solutions
@@ -72,6 +73,25 @@ def rat_poly(solved, base):
         independent |= map(fil, row)
     dependent[-1] = 0    # answer may be dependent, we dont care
     return dependent, independent
+
+def rat_poly_sing(mat, indep, d1, d2, base):
+    ## XXX: Only for singular solutions for now
+    coefficients = [0] * (d1 + d2)
+    try:
+        coefficients[list(indep).index(1)] = mpz(1)
+    except ValueError:
+        pass
+    for (i, v) in enumerate(indep[:-1]):
+        if v == 0:
+            coefficients[i] = (mat[i][-1] - mat[i][list(indep).index(1)]) % base
+    coeff_n = list(enumerate(coefficients[d1-1::-1]))
+    coeff_d = list(enumerate(coefficients[:d1-1:-1]))
+    f = lambda x: (pow(x, d1, base) + sum([pow(x, a, base) * b for (a,b) in coeff_n])) % base
+    g = lambda x: (pow(x, d2, base) + sum([pow(x, a, base) * b for (a,b) in coeff_d])) % base
+    return f,g
+
+    
+    
 
 def test_data():
     evpoints = [-1, -2, -3, -4, -5]
