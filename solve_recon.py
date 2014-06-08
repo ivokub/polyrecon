@@ -1,8 +1,10 @@
 """
 Very simple module to solve linear equation systems in finite fields.
 
-
+Author: Ivo Kubjas
+BSD 2-Clause License
 """
+
 import numpy as np
 from gmpy import mpz, invert
 import pdb  # XXX: Delete when done
